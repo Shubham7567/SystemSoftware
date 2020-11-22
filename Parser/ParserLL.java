@@ -1,10 +1,14 @@
+import javax.lang.model.util.ElementScanner14;
+
 class ParserLL {
 
     public static String[][] rules ={ {"E","TA"},{"A", "+TA"}, {"T", "VB"}, {"B", "*VB"}, {"V", "i"}};//static rules
     public static String[] operator = new String[3];//to store operators to compare with result
     public static int opPtr=0;//pointer of operator array
     public static String[] predictions = new String[30];
+    public static String[] Symbols = new String[30];
     public static int predictionPtr = 0;
+
     
     //to check rule for per character
     public static String checkRules(String s1)
@@ -42,6 +46,7 @@ class ParserLL {
 
     public static void displayProcess(String[] steps,int dataPointer)
     {
+
         for(int index = 0;index < dataPointer; index++)
         {
             steps[index] = steps[index].contains("i")?steps[index].replace("i", "<id>"):steps[index];
@@ -52,8 +57,29 @@ class ParserLL {
                 predictions[index] = predictions[index].contains("i")?predictions[index].replace("i", "<id>"):predictions[index];
                 predictions[index] = predictions[index].contains("A")?predictions[index].replace("A", "E\""):predictions[index];
                 predictions[index] = predictions[index].contains("B")?predictions[index].replace("B", "T\""):predictions[index];
+                
+            if((predictions[index].startsWith("E") && !predictions[index].startsWith("E\"")) || 
+            (predictions[index].startsWith("T") && !predictions[index].startsWith("T\"")) || 
+            (predictions[index].startsWith("V") && !predictions[index].startsWith("V\"")))
+            {
+                Symbols[index] = "<id>";
             }
-            System.out.println((index +1)+". |-"+steps[index] + "-|"+ " \t\t| " + predictions[index]);
+            else if(predictions[index].contains("+"))
+            {
+                Symbols[index] = "+";
+            }
+            else if(predictions[index].contains("*"))
+            {
+                Symbols[index] = "*";
+            }
+            else{
+                Symbols[index] = "-";
+            }
+            }
+            //System.out.format("%1$20s | %1$15s | %1$10s",steps[index],Symbols[index],predictions[index]);
+            System.out.format("%-20s | %-15s | %-10s",steps[index],Symbols[index],predictions[index]);
+            System.out.println();
+            //System.out.println((index +1)+". |-"+steps[index] + "-|"+ " \t\t| " + Symbols[index] + "\t\t|" + predictions[index]);
         }
     }
     public static void main(String[] args) {
@@ -64,7 +90,7 @@ class ParserLL {
         int dataPointer = 0;//pointer to the array of data
         String[] data =new String[30];
         data[0] = "E";//to set the initial equation
-
+        Symbols[0]="<id>";
         dataPointer++;
         //a+b*c
         for(;!(data[dataPointer-1].contains("+") && data[dataPointer-1].contains("*") && data[dataPointer-1].length() == 5);dataPointer++)
@@ -84,10 +110,28 @@ class ParserLL {
                         break;
                     }
                 }
+                
                 k++;                
             }
-            data[dataPointer] =  res + temp.substring(k+1,temp.length());  
             
+            data[dataPointer] =  res + temp.substring(k+1,temp.length());  
+            // if(predictions[predictionPtr].contains("E") || predictions[predictionPtr].contains("T") || predictions[predictionPtr].contains("V"))
+            // {
+            //     Symbols[predictionPtr] = "<id>";
+            // }                                   //E"                              //T"
+            // else if((predictions[dataPointer].contains("A") || predictions[dataPointer].contains("B")) && predictions[dataPointer].contains("+"))
+            // {
+            //     Symbols[dataPointer] = "+";
+            // }
+            // else if((predictions[dataPointer].contains("B")) && predictions[dataPointer].contains("*"))
+            // {
+            //     Symbols[dataPointer] = "*";
+            // }
+            // else if((predictions[dataPointer].contains("A") || predictions[dataPointer].contains("B")) && opPtr>1)
+            // {
+            //     Symbols[dataPointer] = "e";
+            // }
+
         }
         displayProcess(data,dataPointer);
     }
