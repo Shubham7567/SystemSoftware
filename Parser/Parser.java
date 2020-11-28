@@ -1,9 +1,10 @@
+
 class Parser{
     //global variable
     public static String[][] rules ={ {"E","TA"},{"A", "+E"}, {"T", "VB"}, {"B", "*T"}, {"V", "i"}};//static rules
-    public static String[] operator = new String[3];//to store operators to compare with result
+    public static String[] operator = new String[10];//to store operators to compare with result
     public static int opPtr=0;//pointer of operator array
-    public static int limit = 0;
+    public static int limit;//for 2 operators limit=1 so for n operators limit=n-1
     //to check rule for per character
     public static String checkRules(String s1)
     {
@@ -19,10 +20,12 @@ class Parser{
                     {
                         return "";
                     }
-                    else if(operator[opPtr].equals(Character.toString(ch))){//if found one is operator and satify the rule for operator  
+                    else if(operator[opPtr].equals(Character.toString(ch)))
+                    {//if found one is operator and satify the rule for operator  
                         opPtr++;
                     }
-                    else{
+                    else
+                    {
                         return null;
                     }
                 }
@@ -45,32 +48,40 @@ class Parser{
         }
     }
 
-    public static void makeOperator(String inputStr)
+     public static void makeOperator(String inputStr)
     {
         int cnt=0;
         for(int i=0;i<inputStr.length();i++){
+            
             int ch = inputStr.charAt(i);
+           
             if(ch==42 ||  ch==43 ){   // * or +
-                operator[cnt] = Character.toString(ch);
+               
+                if(ch==42)
+                    operator[cnt] ="*";
+                else
+                    operator[cnt] ="+";
                 cnt++;
             }
         }
-        limit = cnt;
-    }
+        limit = cnt-1;
+     
+    } 
 
     public static void main(String[] args) {
         //to set the operators
-        operator[0] = "+";
-        operator[1] = "*";     
-
+        makeOperator("A+B*C+D*F"); 
+      
         int dataPointer = 0;//pointer to the array of data
         String[] data =new String[30];
         data[0] = "E";//to set the initial equation
-
+       
         dataPointer++;
         //a+b*c
-        for(;!(data[dataPointer-1].contains("+") && data[dataPointer-1].contains("*") && data[dataPointer-1].length() == 5);dataPointer++)
+      
+        for(;data[dataPointer-1].charAt(data[dataPointer-1].length()-1)!='i';dataPointer++)
         {
+            
             String temp = data[dataPointer-1];
             int len = temp.length();
             String result;
@@ -88,7 +99,7 @@ class Parser{
                 }
                 k++;                
             }
-            data[dataPointer] =  res + temp.substring(k+1,temp.length());  
+            data[dataPointer] =  res + temp.substring(k+1,temp.length()); 
         }
         displayProcess(data,dataPointer);
     }
